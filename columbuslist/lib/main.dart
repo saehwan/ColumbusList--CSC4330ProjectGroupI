@@ -3,6 +3,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'login_page.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -26,9 +28,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Columbus List',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
       home: FutureBuilder(
           future: _initialization,
           builder: (context, snapshot) {
@@ -62,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
             "Columbus List",
           ),
           centerTitle: true,
+          backgroundColor: Color.fromRGBO(0, 51, 91, 100),
           actions: [
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -71,7 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     "Login",
                   )),
                   onTap: () {
-                    print("GO TO LOGIN PAGE");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
                   }),
             ),
             Padding(
