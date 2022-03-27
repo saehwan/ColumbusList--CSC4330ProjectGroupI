@@ -3,7 +3,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'login_page.dart';
+import 'package:columbuslist/pages/home_page.dart';
+import 'package:columbuslist/pages/login_page.dart';
+import 'package:columbuslist/pages/contact_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,6 +29,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Columbus List',
+      initialRoute: '/',
+      routes: {
+        HomePage.route: (context) => HomePage(),
+        LoginPage.route: (context) => LoginPage(),
+        ContactPage.route: (context) => ContactPage(),
+      },
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
           future: _initialization,
@@ -35,94 +43,10 @@ class MyApp extends StatelessWidget {
               print("Error");
             }
             if (snapshot.connectionState == ConnectionState.done) {
-              return MyHomePage();
+              return HomePage();
             }
             return CircularProgressIndicator();
           }),
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  _MyHomePageState createState() {
-    return _MyHomePageState();
-  }
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Columbus List",
-          ),
-          centerTitle: true,
-          backgroundColor: Color.fromRGBO(0, 51, 91, 100),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                  child: Center(
-                      child: Text(
-                    "Login",
-                  )),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  }),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                  child: Center(
-                      child: Text(
-                    "Sign Up",
-                  )),
-                  onTap: () {
-                    print("GO TO SIGN UP PAGE");
-                  }),
-            ),
-          ],
-          actionsIconTheme: IconThemeData(
-            size: 32,
-          ),
-        ),
-        drawer: Drawer(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                    child: Center(
-                        child: Text(
-                      "Home Page",
-                      style: TextStyle(fontSize: 15),
-                    )),
-                    onTap: () {
-                      print("GO TO SIGN UP PAGE");
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                    child: Center(
-                        child: Text(
-                      "Contact Us",
-                      style: TextStyle(fontSize: 15),
-                    )),
-                    onTap: () {
-                      print("GO TO SIGN UP PAGE");
-                    }),
-              ),
-            ],
-          ),
-        ),
-        body: Container());
   }
 }
