@@ -14,8 +14,6 @@ class ContactPage extends StatefulWidget {
 class _LoginPageState extends State<ContactPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Contact Us")),
-    );
+    return Scaffold(body: Text("CONTACT US"));
   }
 }

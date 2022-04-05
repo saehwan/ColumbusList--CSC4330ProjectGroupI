@@ -1,13 +1,18 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:columbuslist/pages/home_page.dart';
 import 'package:columbuslist/pages/login_page.dart';
 import 'package:columbuslist/pages/contact_page.dart';
+import 'package:columbuslist/pages/main_layout.dart';
+import 'package:columbuslist/services/navigation_service.dart';
+import 'package:columbuslist/services/router.dart';
+import 'package:columbuslist/services/locator.dart';
 
 void main() {
+  setupLocator();
   runApp(MyApp());
 }
 
@@ -29,24 +34,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Columbus List',
-      initialRoute: '/',
       routes: {
         HomePage.route: (context) => HomePage(),
         LoginPage.route: (context) => LoginPage(),
         ContactPage.route: (context) => ContactPage(),
       },
       debugShowCheckedModeBanner: false,
-      home: FutureBuilder(
-          future: _initialization,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              print("Error");
-            }
-            if (snapshot.connectionState == ConnectionState.done) {
-              return HomePage();
-            }
-            return CircularProgressIndicator();
-          }),
+      builder: (context, child) {
+        return Overlay(initialEntries: [
+          OverlayEntry(builder: (context) => MainLayout(child: child))
+        ]);
+      },
+      navigatorKey: locator<NavigationService>().navigatorKey,
+      onGenerateRoute: generateRoute,
+      initialRoute: HomePage.route,
     );
   }
 }
