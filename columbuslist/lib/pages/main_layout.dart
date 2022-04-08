@@ -3,6 +3,7 @@
 import 'package:columbuslist/pages/contact_page.dart';
 import 'package:columbuslist/pages/home_page.dart';
 import 'package:columbuslist/pages/login_page.dart';
+import 'package:columbuslist/pages/signup_page.dart';
 import 'package:columbuslist/services/locator.dart';
 import 'package:columbuslist/services/navigation_service.dart';
 import 'package:flutter/material.dart';
@@ -107,7 +108,7 @@ class _MainLayoutState extends State<MainLayout> {
                     "Sign Up",
                   )),
                   onTap: () {
-                    print("GO TO SIGN UP PAGE");
+                    locator<NavigationService>().navigateTo(SignupPage.route);
                   }),
             ),
           ],

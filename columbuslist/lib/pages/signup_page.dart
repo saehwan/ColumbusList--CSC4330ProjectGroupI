@@ -1,20 +1,20 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:columbuslist/pages/signup_page.dart';
+import 'package:columbuslist/pages/login_page.dart';
 import 'package:columbuslist/services/locator.dart';
 import 'package:columbuslist/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignupPage extends StatefulWidget {
+  const SignupPage({Key? key}) : super(key: key);
 
-  static const String route = "/login";
+  static const String route = "/signup";
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Padding(
                       padding: const EdgeInsets.only(
                           top: 50, left: 50.0, bottom: 30),
-                      child: Text("LOGIN",
+                      child: Text("SIGN UP",
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold)),
                     ),
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    child: Text('LOGIN', style: TextStyle(fontSize: 18)),
+                    child: Text('SIGN UP', style: TextStyle(fontSize: 18)),
                     style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.only(
                             top: 23, bottom: 23, left: 180, right: 180),
@@ -122,13 +122,13 @@ class _LoginPageState extends State<LoginPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Don't have an account?"),
+                      Text("Already have an account?"),
                       SizedBox(width: 5),
                       InkWell(
-                        child: Text("Sign Up",
-                            style: TextStyle(color: Colors.blue)),
+                        child:
+                            Text("Login", style: TextStyle(color: Colors.blue)),
                         onTap: () => locator<NavigationService>()
-                            .navigateTo(SignupPage.route),
+                            .navigateTo(LoginPage.route),
                       )
                     ],
                   )

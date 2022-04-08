@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:columbuslist/pages/contact_page.dart';
 import 'package:columbuslist/pages/home_page.dart';
 import 'package:columbuslist/pages/login_page.dart';

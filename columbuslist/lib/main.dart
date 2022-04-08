@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'package:columbuslist/pages/home_page.dart';
 import 'package:columbuslist/pages/login_page.dart';
+import 'package:columbuslist/pages/signup_page.dart';
 import 'package:columbuslist/pages/contact_page.dart';
 import 'package:columbuslist/pages/main_layout.dart';
 import 'package:columbuslist/services/navigation_service.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
       routes: {
         HomePage.route: (context) => HomePage(),
         LoginPage.route: (context) => LoginPage(),
+        SignupPage.route: (context) => SignupPage(),
         ContactPage.route: (context) => ContactPage(),
       },
       debugShowCheckedModeBanner: false,
