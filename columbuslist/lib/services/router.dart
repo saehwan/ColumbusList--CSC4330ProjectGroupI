@@ -3,6 +3,7 @@
 import 'package:columbuslist/pages/contact_page.dart';
 import 'package:columbuslist/pages/home_page.dart';
 import 'package:columbuslist/pages/login_page.dart';
+import 'package:columbuslist/pages/profile_page.dart';
 import 'package:flutter/cupertino.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -13,6 +14,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(LoginPage(), settings);
     case ContactPage.route:
       return _getPageRoute(ContactPage(), settings);
+    case ProfilePage.route:
+      return _getPageRoute(ProfilePage(), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }

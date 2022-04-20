@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:columbuslist/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -12,15 +13,9 @@ import 'package:columbuslist/services/navigation_service.dart';
 import 'package:columbuslist/services/router.dart';
 import 'package:columbuslist/services/locator.dart';
 
-void main() {
+void main() async {
   setupLocator();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
-
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp(
+  await Firebase.initializeApp(
       options: FirebaseOptions(
           apiKey: "AIzaSyBOGSccf4DpIANbmBYgtGri14BchpX3nHQ",
           authDomain: "columbuslist-2ab77.firebaseapp.com",
@@ -29,6 +24,11 @@ class MyApp extends StatelessWidget {
           messagingSenderId: "508949398488",
           appId: "1:508949398488:web:252efd9e445b1ce4f828ad",
           measurementId: "G-ZELVFQ4EG2"));
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
         LoginPage.route: (context) => LoginPage(),
         SignupPage.route: (context) => SignupPage(),
         ContactPage.route: (context) => ContactPage(),
+        ProfilePage.route: (context) => ProfilePage(),
       },
       debugShowCheckedModeBanner: false,
       builder: (context, child) {

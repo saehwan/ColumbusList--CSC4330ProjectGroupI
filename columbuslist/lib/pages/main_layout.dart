@@ -3,9 +3,11 @@
 import 'package:columbuslist/pages/contact_page.dart';
 import 'package:columbuslist/pages/home_page.dart';
 import 'package:columbuslist/pages/login_page.dart';
+import 'package:columbuslist/pages/profile_page.dart';
 import 'package:columbuslist/pages/signup_page.dart';
 import 'package:columbuslist/services/locator.dart';
 import 'package:columbuslist/services/navigation_service.dart';
+import 'package:columbuslist/variables.dart';
 import 'package:flutter/material.dart';
 
 class MainLayout extends StatefulWidget {
@@ -20,6 +22,7 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   final searchController = TextEditingController();
   String searchText = "";
+  bool isLoggedIn = false;
 
   @override
   void dispose() {
@@ -31,6 +34,22 @@ class _MainLayoutState extends State<MainLayout> {
 
   void refreshState() {
     setState(() {});
+  }
+
+  @override
+  initState() {
+    super.initState();
+    auth.authStateChanges().listen((user) {
+      if (user != null) {
+        setState(() {
+          isLoggedIn = true;
+        });
+      } else {
+        setState(() {
+          isLoggedIn = false;
+        });
+      }
+    });
   }
 
   @override
@@ -88,28 +107,55 @@ class _MainLayoutState extends State<MainLayout> {
             ),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                  child: Center(
-                      child: Text(
-                    "Login",
-                  )),
-                  onTap: () {
-                    locator<NavigationService>().navigateTo(LoginPage.route);
-                    refreshState();
-                  }),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                  child: Center(
-                      child: Text(
-                    "Sign Up",
-                  )),
-                  onTap: () {
-                    locator<NavigationService>().navigateTo(SignupPage.route);
-                  }),
+            Row(
+              children: [
+                isLoggedIn == true
+                    ? Text(auth.currentUser!.email!,
+                        )
+                    : Text(""),
+                isLoggedIn == false
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                            child: Center(
+                                child: Text(
+                              "Login",
+                            )),
+                            onTap: () {
+                              locator<NavigationService>()
+                                  .navigateTo(LoginPage.route);
+                              refreshState();
+                            }),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                            child: Center(
+                                child: Text(
+                              "Logout",
+                            )),
+                            onTap: () {
+                              auth.signOut();
+                              locator<NavigationService>()
+                                  .navigateTo(LoginPage.route);
+                              refreshState();
+                            }),
+                      ),
+                isLoggedIn == false
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                            child: Center(
+                                child: Text(
+                              "Sign Up",
+                            )),
+                            onTap: () {
+                              locator<NavigationService>()
+                                  .navigateTo(SignupPage.route);
+                            }),
+                      )
+                    : Text(""),
+              ],
             ),
           ],
           actionsIconTheme: IconThemeData(
@@ -155,7 +201,8 @@ class _MainLayoutState extends State<MainLayout> {
                       style: TextStyle(fontSize: 15),
                     )),
                     onTap: () {
-                      locator<NavigationService>().navigateTo(HomePage.route);
+                      locator<NavigationService>()
+                          .navigateTo(ProfilePage.route);
                       refreshState();
                     }),
               ),
