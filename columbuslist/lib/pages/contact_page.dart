@@ -85,22 +85,6 @@ class _LoginPageState extends State<ContactPage> {
                   SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GFIconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.facebook),
-                        type: GFButtonType.solid,
-                      ),
-                      SizedBox(width: 10),
-                      GFIconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.discord),
-                        type: GFButtonType.solid,
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
