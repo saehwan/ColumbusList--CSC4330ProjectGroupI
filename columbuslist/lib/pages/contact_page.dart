@@ -44,29 +44,21 @@ class _LoginPageState extends State<ContactPage> {
                   SizedBox(height: 20),
                   Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            decoration: InputDecoration(
-                                filled: true,
-                                hintText: "Name",
-                                border: InputBorder.none),
-                            onSaved: (input) => name = input!,
-                          )
-                        ],
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                            filled: true,
+                            hintText: "Name",
+                            border: InputBorder.none),
+                        onSaved: (input) => name = input!,
                       )),
                   Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            decoration: InputDecoration(
-                                filled: true,
-                                hintText: "E-mail",
-                                border: InputBorder.none),
-                            onSaved: (input) => email = input!,
-                          )
-                        ],
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                            filled: true,
+                            hintText: "E-mail",
+                            border: InputBorder.none),
+                        onSaved: (input) => email = input!,
                       )),
                   Container(
                     margin: EdgeInsets.all(8),

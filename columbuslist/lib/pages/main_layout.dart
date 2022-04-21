@@ -52,6 +52,8 @@ class _MainLayoutState extends State<MainLayout> {
     });
   }
 
+  void sell() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,43 +68,10 @@ class _MainLayoutState extends State<MainLayout> {
             preferredSize: const Size.fromHeight(60.0),
             child: Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text("Find and sell books",
-                        style: TextStyle(color: Colors.white, fontSize: 15)),
-                  ),
-                  locator<NavigationService>().currentRoute == "/home"
-                      ? Container(
-                          width: MediaQuery.of(context).size.width / 3,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Center(
-                            child: TextField(
-                                controller: searchController,
-                                decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.search),
-                                    suffixIcon: searchController.text.isNotEmpty
-                                        ? GestureDetector(
-                                            child: Icon(Icons.clear),
-                                            onTap: () {
-                                              searchController.clear();
-                                              refreshState();
-                                            },
-                                          )
-                                        : Text(""),
-                                    hintText: 'Search...',
-                                    border: InputBorder.none),
-                                onChanged: (text) {
-                                  refreshState();
-                                }),
-                          ),
-                        )
-                      : Text(""),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Find and sell books",
+                    style: TextStyle(color: Colors.white, fontSize: 15)),
               ),
             ),
           ),
@@ -110,8 +79,9 @@ class _MainLayoutState extends State<MainLayout> {
             Row(
               children: [
                 isLoggedIn == true
-                    ? Text(auth.currentUser!.email!,
-                        )
+                    ? Text(
+                        auth.currentUser!.email!,
+                      )
                     : Text(""),
                 isLoggedIn == false
                     ? Padding(
@@ -138,7 +108,6 @@ class _MainLayoutState extends State<MainLayout> {
                               auth.signOut();
                               locator<NavigationService>()
                                   .navigateTo(LoginPage.route);
-                              refreshState();
                             }),
                       ),
                 isLoggedIn == false
@@ -192,20 +161,22 @@ class _MainLayoutState extends State<MainLayout> {
                       refreshState();
                     }),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                    child: Center(
-                        child: Text(
-                      "Profile",
-                      style: TextStyle(fontSize: 15),
-                    )),
-                    onTap: () {
-                      locator<NavigationService>()
-                          .navigateTo(ProfilePage.route);
-                      refreshState();
-                    }),
-              ),
+              isLoggedIn == true
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                          child: Center(
+                              child: Text(
+                            "Profile",
+                            style: TextStyle(fontSize: 15),
+                          )),
+                          onTap: () {
+                            locator<NavigationService>()
+                                .navigateTo(ProfilePage.route);
+                            refreshState();
+                          }),
+                    )
+                  : Text(""),
             ],
           ),
         ),

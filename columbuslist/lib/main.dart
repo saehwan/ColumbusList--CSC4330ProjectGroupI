@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:columbuslist/pages/profile_page.dart';
+import 'package:columbuslist/pages/sell_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         SignupPage.route: (context) => SignupPage(),
         ContactPage.route: (context) => ContactPage(),
         ProfilePage.route: (context) => ProfilePage(),
+        SellPage.route: (context) => SellPage(),
       },
       debugShowCheckedModeBanner: false,
       builder: (context, child) {

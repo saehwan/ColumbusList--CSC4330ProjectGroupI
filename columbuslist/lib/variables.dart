@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 //Firebase
 var auth = FirebaseAuth.instance;
+var itemcollection = FirebaseFirestore.instance.collection('items');
+var intialItems = List;
 //Firebase
 
 //Clipping
