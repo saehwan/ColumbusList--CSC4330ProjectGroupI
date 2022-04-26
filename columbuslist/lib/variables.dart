@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 
 //Firebase
 var auth = FirebaseAuth.instance;
+var usercollection = FirebaseFirestore.instance.collection('users');
 var itemcollection = FirebaseFirestore.instance.collection('items');
 var intialItems = List;
+
+var isLoggedIn = false;
 //Firebase
 
 //Clipping

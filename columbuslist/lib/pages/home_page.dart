@@ -21,7 +21,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final searchController = TextEditingController();
   String searchText = "";
-  bool isLoggedIn = false;
 
   @override
   void dispose() {
@@ -31,24 +30,52 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  @override
-  initState() {
-    super.initState();
-    auth.authStateChanges().listen((user) {
-      if (user != null) {
-        setState(() {
-          isLoggedIn = true;
-        });
-      } else {
-        setState(() {
-          isLoggedIn = false;
-        });
-      }
-    });
-  }
+  List itemList = [itemcollection.get()];
+
+  List displayList = [];
 
   void refreshState() {
     setState(() {});
+  }
+
+  void search() {
+    setState(() {
+      displayList.clear();
+    });
+
+    if (searchController.text.isNotEmpty) {
+      itemcollection.get().then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          if (doc['name']
+              .toString()
+              .toLowerCase()
+              .contains(searchController.text.toLowerCase())) {
+            bool alreadyFound = false;
+            for (int i = 0; i < displayList.length; i++) {
+              if (displayList[i]['name'] == doc['name']) {
+                alreadyFound = true;
+              }
+            }
+            if (!alreadyFound) {
+              displayList.add(doc);
+            }
+          } else if (doc['tags']
+              .contains(searchController.text.toLowerCase())) {
+            bool alreadyFound = false;
+            for (int i = 0; i < displayList.length; i++) {
+              for (int j = 0; j < doc['tags'].length(); j++) {
+                if (displayList[i]['tags'].contains(doc['tags'][j])) {
+                  alreadyFound = true;
+                }
+              }
+            }
+            if (!alreadyFound) {
+              displayList.add(doc);
+            }
+          }
+        });
+      });
+    }
   }
 
   void sell() {}
@@ -88,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                                   hintText: 'Search...',
                                   border: InputBorder.none),
                               onChanged: (text) {
-                                refreshState();
+                                search();
                               }),
                         ),
                       ),
@@ -123,53 +150,108 @@ class _HomePageState extends State<HomePage> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                  return Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 250,
-                                  crossAxisSpacing: 20,
-                                  mainAxisSpacing: 20),
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (BuildContext ctx, index) {
-                            DocumentSnapshot doc = snapshot.data!.docs[index];
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: InkWell(
-                                onTap: () => print("Here"),
-                                child: Container(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Image(
-                                          image:
-                                              NetworkImage(doc["images"][0])),
-                                      Text(doc["name"],
-                                          style: TextStyle(fontSize: 20)),
-                                      SizedBox(height: 5),
-                                      Text(doc["description"]),
-                                      SizedBox(height: 5),
-                                      Text(doc["price"].toString()),
-                                      SizedBox(height: 5),
-                                      Text("Tags: " +
-                                          doc["tags"]
-                                              .toString()
-                                              .replaceAll("[", "")
-                                              .replaceAll("]", ""))
-                                    ],
+
+                  if (searchController.text.isEmpty) {
+                    return Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 250,
+                                    crossAxisSpacing: 20,
+                                    mainAxisSpacing: 20),
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (BuildContext ctx, index) {
+                              DocumentSnapshot doc = snapshot.data!.docs[index];
+
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  onTap: () => print("Here"),
+                                  child: Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Image(
+                                            image:
+                                                NetworkImage(doc["images"][0])),
+                                        Text(doc["name"],
+                                            style: TextStyle(fontSize: 20)),
+                                        SizedBox(height: 5),
+                                        Text(doc["description"]),
+                                        SizedBox(height: 5),
+                                        Text(doc["price"].toString()),
+                                        SizedBox(height: 5),
+                                        Text("Tags: " +
+                                            doc["tags"]
+                                                .toString()
+                                                .replaceAll("[", "")
+                                                .replaceAll("]", ""))
+                                      ],
+                                    ),
+                                    decoration: BoxDecoration(
+                                        color: Colors.amber,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                   ),
-                                  decoration: BoxDecoration(
-                                      color: Colors.amber,
-                                      borderRadius: BorderRadius.circular(15)),
                                 ),
-                              ),
-                            );
-                          }),
-                    ),
-                  );
+                              );
+                            }),
+                      ),
+                    );
+                  } else {
+                    return Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 250,
+                                    crossAxisSpacing: 20,
+                                    mainAxisSpacing: 20),
+                            itemCount: displayList.length,
+                            itemBuilder: (BuildContext ctx, index) {
+                              DocumentSnapshot doc = displayList[index];
+
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  onTap: () => print("Here"),
+                                  child: Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Image(
+                                            image:
+                                                NetworkImage(doc["images"][0])),
+                                        Text(doc["name"],
+                                            style: TextStyle(fontSize: 20)),
+                                        SizedBox(height: 5),
+                                        Text(doc["description"]),
+                                        SizedBox(height: 5),
+                                        Text(doc["price"].toString()),
+                                        SizedBox(height: 5),
+                                        Text("Tags: " +
+                                            doc["tags"]
+                                                .toString()
+                                                .replaceAll("[", "")
+                                                .replaceAll("]", ""))
+                                      ],
+                                    ),
+                                    decoration: BoxDecoration(
+                                        color: Colors.amber,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                    );
+                  }
                 }),
           ],
         ));

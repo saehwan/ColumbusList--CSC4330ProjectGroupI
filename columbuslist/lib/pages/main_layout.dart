@@ -5,6 +5,7 @@ import 'package:columbuslist/pages/home_page.dart';
 import 'package:columbuslist/pages/login_page.dart';
 import 'package:columbuslist/pages/profile_page.dart';
 import 'package:columbuslist/pages/signup_page.dart';
+import 'package:columbuslist/pages/wishlist_page.dart';
 import 'package:columbuslist/services/locator.dart';
 import 'package:columbuslist/services/navigation_service.dart';
 import 'package:columbuslist/variables.dart';
@@ -22,7 +23,6 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   final searchController = TextEditingController();
   String searchText = "";
-  bool isLoggedIn = false;
 
   @override
   void dispose() {
@@ -70,8 +70,30 @@ class _MainLayoutState extends State<MainLayout> {
               padding: const EdgeInsets.only(bottom: 10.0),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text("Find and sell books",
-                    style: TextStyle(color: Colors.white, fontSize: 15)),
+                child: Stack(children: [
+                  Align(
+                    child: Text("Find and sell books",
+                        style: TextStyle(color: Colors.white, fontSize: 15)),
+                  ),
+                  isLoggedIn == true
+                      ? Positioned(
+                          top: -5,
+                          right: 5,
+                          child: ElevatedButton(
+                            child: Icon(Icons.bookmark),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                elevation: 10),
+                            onPressed: () {
+                              locator<NavigationService>()
+                                  .navigateTo(WishlistPage.route);
+                            },
+                          ),
+                        )
+                      : Text(""),
+                ]),
               ),
             ),
           ),

@@ -2,6 +2,7 @@
 
 import 'package:columbuslist/pages/profile_page.dart';
 import 'package:columbuslist/pages/sell_page.dart';
+import 'package:columbuslist/pages/wishlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         ContactPage.route: (context) => ContactPage(),
         ProfilePage.route: (context) => ProfilePage(),
         SellPage.route: (context) => SellPage(),
+        WishlistPage.route: (context) => WishlistPage(),
       },
       debugShowCheckedModeBanner: false,
       builder: (context, child) {

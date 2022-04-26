@@ -9,10 +9,10 @@ class ContactPage extends StatefulWidget {
   static const String route = "/contact";
 
   @override
-  State<ContactPage> createState() => _LoginPageState();
+  State<ContactPage> createState() => _ContactPageState();
 }
 
-class _LoginPageState extends State<ContactPage> {
+class _ContactPageState extends State<ContactPage> {
   final _formKey = GlobalKey<FormState>();
   String? name, email, message;
 

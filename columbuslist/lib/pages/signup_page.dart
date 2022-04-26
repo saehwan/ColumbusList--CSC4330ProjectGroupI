@@ -27,6 +27,12 @@ class _SignupPageState extends State<SignupPage> {
       auth
           .createUserWithEmailAndPassword(email: email!, password: password!)
           .then((signedUser) {
+        usercollection.doc(signedUser.user!.uid).set({
+          'contact': {
+            'name': '',
+            'email': email!.toLowerCase(),
+          },
+        });
         auth.signInWithEmailAndPassword(
           email: email!,
           password: password!,
