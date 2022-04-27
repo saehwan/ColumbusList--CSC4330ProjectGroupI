@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 //Firebase
 var auth = FirebaseAuth.instance;
+Reference storage = FirebaseStorage.instance.ref();
 var usercollection = FirebaseFirestore.instance.collection('users');
 var itemcollection = FirebaseFirestore.instance.collection('items');
 var intialItems = List;

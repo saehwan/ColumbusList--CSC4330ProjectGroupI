@@ -41,6 +41,8 @@ dependencies:
   cloud_firestore: ^3.1.12
   image_picker_web: ^2.1.1
   textfield_tags: ^2.0.0
+  multi_select_flutter: ^4.1.2
+  firebase_storage: ^10.2.13
 
 dev_dependencies:
   flutter_test:

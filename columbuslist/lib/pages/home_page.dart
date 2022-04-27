@@ -72,6 +72,19 @@ class _HomePageState extends State<HomePage> {
             if (!alreadyFound) {
               displayList.add(doc);
             }
+          } else if (doc['price']
+              .contains(searchController.text.toLowerCase())) {
+            bool alreadyFound = false;
+            for (int i = 0; i < displayList.length; i++) {
+              for (int j = 0; j < doc['tags'].length(); j++) {
+                if (displayList[i]['price'].contains(doc['price'][j])) {
+                  alreadyFound = true;
+                }
+              }
+            }
+            if (!alreadyFound) {
+              displayList.add(doc);
+            }
           }
         });
       });
@@ -175,8 +188,7 @@ class _HomePageState extends State<HomePage> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         Image(
-                                            image:
-                                                NetworkImage(doc["images"][0])),
+                                            image: NetworkImage(doc["image"])),
                                         Text(doc["name"],
                                             style: TextStyle(fontSize: 20)),
                                         SizedBox(height: 5),
