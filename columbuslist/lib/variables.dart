@@ -13,6 +13,18 @@ var intialItems = List;
 var isLoggedIn = false;
 //Firebase
 
+//Tags
+List tags = [
+  'Electronic',
+  'Stationary',
+  'Books',
+  'Exam Booklet/Scantron',
+  'Course Resources',
+  'Accessories',
+  'Furniture'
+];
+//Tags
+
 //Clipping
 class CustomShapeClipper extends CustomClipper<Path> {
   @override

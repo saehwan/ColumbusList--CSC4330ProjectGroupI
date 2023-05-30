@@ -2,7 +2,11 @@
 
 import 'dart:io';
 import 'dart:html' as html;
+import 'dart:typed_data';
 
+import 'package:columbuslist/pages/home_page.dart';
+import 'package:columbuslist/services/locator.dart';
+import 'package:columbuslist/services/navigation_service.dart';
 import 'package:columbuslist/variables.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -23,22 +27,15 @@ class SellPageState extends State<SellPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _textController = TextEditingController();
   final TextfieldTagsController _controller = TextfieldTagsController();
-  String? name, description, price, image;
+  String? name, description, image;
+  double? price;
+  Uint8List? imageFile;
 
   Image _imageWidget = Image.asset("");
 
   UploadTask? uploadTask;
   bool uploading = false;
 
-  List tags = [
-    'Electronic',
-    'Stationary',
-    'Books',
-    'Exam Booklet/Scantrond',
-    'Course Resources',
-    'Accessories',
-    'Furniture'
-  ];
   List selectedTags = [];
 
   listItem() {
@@ -60,7 +57,7 @@ class SellPageState extends State<SellPage> {
       _formKey.currentState!.save();
       var itemKey = itemcollection.doc().id;
       uploadTask =
-          storage.child('itemPics/' + itemKey + "/$name").putFile(File(image!));
+          storage.child('itemPics/' + itemKey + "/$name").putData(imageFile!);
       uploadTask!.snapshotEvents.listen((TaskSnapshot snapshot) {
         if (snapshot.state == TaskState.running) {
           setState(() {
@@ -80,18 +77,20 @@ class SellPageState extends State<SellPage> {
         'price': price,
         'tags': selectedTags,
         'image': image,
+        'contact': auth.currentUser!.email,
       });
-      Navigator.pop(context);
+      locator<NavigationService>().navigateTo(HomePage.route);
     }
   }
 
   Future<void> getImageInfo() async {
-    var mediaData = await ImagePickerWeb.getImageInfo;
-    html.File mediaFile = html.File(mediaData!.data!, mediaData.fileName!);
+    var mediaData = await ImagePickerWeb.getImageAsBytes();
 
-    if (mediaFile != null) {
+    if (mediaData != null) {
       setState(() {
-        _imageWidget = Image.memory(mediaData.data!);
+        _imageWidget = Image.memory(mediaData, scale: 10);
+        image = "test";
+        imageFile = mediaData;
       });
     }
   }
@@ -107,7 +106,6 @@ class SellPageState extends State<SellPage> {
               child: Column(
                 children: [
                   Container(
-                    height: 700,
                     width: 500,
                     decoration: BoxDecoration(
                         color: Colors.amber,
@@ -120,7 +118,9 @@ class SellPageState extends State<SellPage> {
                               ? InkWell(
                                   onTap: () => getImageInfo(),
                                   child: Icon(Icons.person, size: 250))
-                              : _imageWidget,
+                              : InkWell(
+                                  onTap: () => getImageInfo(),
+                                  child: _imageWidget),
                           SizedBox(height: 20),
                           Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -138,7 +138,8 @@ class SellPageState extends State<SellPage> {
                                     filled: true,
                                     hintText: "Price",
                                     border: InputBorder.none),
-                                onSaved: (input) => name = input!,
+                                onSaved: (input) =>
+                                    price = double.parse(input!),
                               )),
                           Container(
                             margin: EdgeInsets.all(8),
@@ -150,7 +151,7 @@ class SellPageState extends State<SellPage> {
                                 filled: true,
                                 border: InputBorder.none,
                               ),
-                              onSaved: (input) => price = input!,
+                              onSaved: (input) => description = input!,
                             ),
                           ),
                           Padding(
@@ -177,7 +178,9 @@ class SellPageState extends State<SellPage> {
                                             MultiSelectItem<String>(e, e))
                                         .toList(),
                                     onConfirm: (values) {
-                                      selectedTags = values;
+                                      setState(() {
+                                        selectedTags = values;
+                                      });
                                     },
                                     chipDisplay: MultiSelectChipDisplay(
                                       onTap: (value) {
@@ -213,7 +216,7 @@ class SellPageState extends State<SellPage> {
                         padding: EdgeInsets.only(
                             top: 23, bottom: 23, left: 100, right: 100),
                         elevation: 10),
-                    onPressed: () => print("SELL"),
+                    onPressed: () => createItem(),
                   ),
                 ],
               ),

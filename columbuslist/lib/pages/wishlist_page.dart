@@ -6,19 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:columbuslist/variables.dart';
 
 class WishlistItem {
+  final String? id;
   final String? name;
   final String? description;
   final int? price;
   final List? tags;
-  final List? images;
+  final String? image;
+  final String? contact;
 
-  WishlistItem({
-    this.name,
-    this.description,
-    this.price,
-    this.tags,
-    this.images,
-  });
+  WishlistItem(
+      {this.id,
+      this.name,
+      this.description,
+      this.price,
+      this.tags,
+      this.image,
+      this.contact});
 }
 
 class WishlistPage extends StatefulWidget {
@@ -32,30 +35,69 @@ class WishlistPage extends StatefulWidget {
 
 class _WishlistPageState extends State<WishlistPage> {
   final _formKey = GlobalKey<FormState>();
-  String? name, email, message;
 
   List wishlistedItems = [];
 
-  submit() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      print("SUBMITTED");
-    }
+  @override
+  initState() {
+    super.initState();
+    getData();
   }
 
-  Future getData(List ids) async {
+  getData() async {
+    wishlistedItems.clear();
+    List ids = [];
+    await usercollection.doc(auth.currentUser!.uid).get().then(((value) => {
+          for (int i = 0; i < value['wishlist'].length; i++)
+            {ids.add(value['wishlist'][i])}
+        }));
+    List tempList = [];
     for (int i = 0; i < ids.length; i++) {
-      var result = await itemcollection.doc(ids[i]).get().then((value) => {
-            wishlistedItems.add(WishlistItem(
-                name: value['name'],
-                description: value['description'],
-                price: value['price'],
-                tags: value['tags'],
-                images: value['images']))
-          });
-      return result;
+      var wishlistObject = [ids[i]];
+      await itemcollection
+          .doc(ids[i])
+          .get()
+          .then((value) => {
+                if (value['contact'] != auth.currentUser!.email)
+                  {
+                    tempList.add(WishlistItem(
+                      id: ids[i],
+                      name: value['name'],
+                      description: value['description'],
+                      price: value['price'],
+                      tags: value['tags'],
+                      image: value['image'],
+                      contact: value['contact'],
+                    )),
+                  }
+                else
+                  {
+                    usercollection.doc(auth.currentUser!.uid).update({
+                      'wishlist': FieldValue.arrayRemove(wishlistObject),
+                    }),
+                  }
+              })
+          .catchError((e) => {
+                if (e.toString().contains("does not exist"))
+                  {
+                    usercollection.doc(auth.currentUser!.uid).update({
+                      'wishlist': FieldValue.arrayRemove(wishlistObject),
+                    }),
+                    setState(() {}),
+                  }
+              });
     }
-    return;
+    wishlistedItems = tempList;
+    setState(() {});
+  }
+
+  void removeFromWishlist(String id) {
+    var wishlistObject = [id];
+    usercollection.doc(auth.currentUser!.uid).update({
+      'wishlist': FieldValue.arrayRemove(wishlistObject),
+    });
+    setState(() {});
+    getData();
   }
 
   @override
@@ -81,32 +123,61 @@ class _WishlistPageState extends State<WishlistPage> {
                       );
                     }
 
-                    return FutureBuilder(
-                        future: getData(snapshot.data!.data()['wishlist']),
-                        builder: (context, AsyncSnapshot snapshott) {
-                          if (snapshott.hasData) {
-                            return Flexible(
-                              child: ListView.builder(
-                                  itemCount: wishlistedItems.length,
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                        height: 150,
-                                        width: 600,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.grey.shade600)),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.person, size: 150),
-                                            Text(wishlistedItems[index].name),
-                                          ],
-                                        ));
-                                  }),
+                    return Flexible(
+                      child: ListView.builder(
+                          itemCount: wishlistedItems.length,
+                          itemBuilder: (context, index) {
+                            var wishlistedItem = wishlistedItems[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 500.0, right: 500, bottom: 20),
+                              child: Container(
+                                  height: 150,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.grey.shade600)),
+                                  child: Row(
+                                    children: [
+                                      Image(
+                                          image: NetworkImage(
+                                            wishlistedItem.image,
+                                          ),
+                                          width: 250),
+                                      SizedBox(width: 100),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(wishlistedItem.name,
+                                              style: TextStyle(fontSize: 25)),
+                                          Text(wishlistedItem.description),
+                                          Text("\$" +
+                                              wishlistedItem.price.toString()),
+                                          Text(wishlistedItem.contact
+                                              .toString()),
+                                          SizedBox(height: 10),
+                                          ElevatedButton(
+                                            child: Text('Remove from wishlist',
+                                                style: TextStyle(fontSize: 12)),
+                                            style: ElevatedButton.styleFrom(
+                                                padding: EdgeInsets.only(
+                                                    top: 13,
+                                                    bottom: 13,
+                                                    left: 30,
+                                                    right: 30),
+                                                elevation: 10),
+                                            onPressed: () {
+                                              removeFromWishlist(
+                                                  wishlistedItem.id);
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  )),
                             );
-                          } else {
-                            return CircularProgressIndicator();
-                          }
-                        });
+                          }),
+                    );
                   }),
             ],
           ),

@@ -33,6 +33,7 @@ class _SignupPageState extends State<SignupPage> {
             'email': email!.toLowerCase(),
           },
           'wishlist': [],
+          'notifyChange': false,
         });
         auth.signInWithEmailAndPassword(
           email: email!,

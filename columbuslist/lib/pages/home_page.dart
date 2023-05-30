@@ -20,7 +20,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final searchController = TextEditingController();
-  String searchText = "";
 
   @override
   void dispose() {
@@ -42,7 +41,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       displayList.clear();
     });
-
     if (searchController.text.isNotEmpty) {
       itemcollection.get().then((QuerySnapshot querySnapshot) {
         querySnapshot.docs.forEach((doc) {
@@ -57,41 +55,55 @@ class _HomePageState extends State<HomePage> {
               }
             }
             if (!alreadyFound) {
-              displayList.add(doc);
+              setState(() {
+                displayList.add(doc);
+              });
             }
-          } else if (doc['tags']
+          }
+          if (doc['tags']
+              .toString()
+              .toLowerCase()
               .contains(searchController.text.toLowerCase())) {
             bool alreadyFound = false;
             for (int i = 0; i < displayList.length; i++) {
-              for (int j = 0; j < doc['tags'].length(); j++) {
-                if (displayList[i]['tags'].contains(doc['tags'][j])) {
-                  alreadyFound = true;
-                }
+              if (displayList[i]['name'] == doc['name']) {
+                alreadyFound = true;
               }
             }
             if (!alreadyFound) {
-              displayList.add(doc);
+              setState(() {
+                displayList.add(doc);
+              });
             }
-          } else if (doc['price']
-              .contains(searchController.text.toLowerCase())) {
+          }
+          if (doc['price'].toString().contains(searchController.text)) {
             bool alreadyFound = false;
             for (int i = 0; i < displayList.length; i++) {
-              for (int j = 0; j < doc['tags'].length(); j++) {
-                if (displayList[i]['price'].contains(doc['price'][j])) {
-                  alreadyFound = true;
-                }
+              if (displayList[i]['name'] == doc['name']) {
+                alreadyFound = true;
               }
             }
             if (!alreadyFound) {
-              displayList.add(doc);
+              setState(() {
+                displayList.add(doc);
+              });
             }
           }
         });
       });
+    } else {
+      setState(() {
+        displayList.clear();
+      });
     }
   }
 
-  void sell() {}
+  void addToWishlist(String id) {
+    var wishlistObject = [id];
+    usercollection.doc(auth.currentUser!.uid).update({
+      'wishlist': FieldValue.arrayUnion(wishlistObject),
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,102 +178,142 @@ class _HomePageState extends State<HomePage> {
 
                   if (searchController.text.isEmpty) {
                     return Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 250,
-                                    crossAxisSpacing: 20,
-                                    mainAxisSpacing: 20),
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (BuildContext ctx, index) {
-                              DocumentSnapshot doc = snapshot.data!.docs[index];
+                      child: GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 5),
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (BuildContext ctx, index) {
+                            DocumentSnapshot doc = snapshot.data!.docs[index];
 
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: InkWell(
-                                  onTap: () => print("Here"),
-                                  child: Container(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Image(
-                                            image: NetworkImage(doc["image"])),
-                                        Text(doc["name"],
-                                            style: TextStyle(fontSize: 20)),
-                                        SizedBox(height: 5),
-                                        Text(doc["description"]),
-                                        SizedBox(height: 5),
-                                        Text(doc["price"].toString()),
-                                        SizedBox(height: 5),
-                                        Text("Tags: " +
-                                            doc["tags"]
-                                                .toString()
-                                                .replaceAll("[", "")
-                                                .replaceAll("]", ""))
-                                      ],
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: Colors.amber,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () => print("Here"),
+                                child: Container(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(height: 3),
+                                      Image(
+                                          image: NetworkImage(
+                                            doc["image"],
+                                          ),
+                                          height: 140,
+                                          width: 300),
+                                      Text(doc["name"],
+                                          style: TextStyle(fontSize: 25)),
+                                      SizedBox(height: 3),
+                                      Text(doc["description"]),
+                                      SizedBox(height: 3),
+                                      Text("\$" + doc["price"].toString()),
+                                      SizedBox(height: 3),
+                                      Text("Tags: " +
+                                          doc["tags"]
+                                              .toString()
+                                              .replaceAll("[", "")
+                                              .replaceAll("]", "")),
+                                      SizedBox(height: 3),
+                                      Text("Contact: " + doc['contact']),
+                                      SizedBox(height: 10),
+                                      isLoggedIn == true &&
+                                              doc["contact"] !=
+                                                  auth.currentUser!.email
+                                          ? ElevatedButton(
+                                              child: Text('Add to wishlist',
+                                                  style:
+                                                      TextStyle(fontSize: 12)),
+                                              style: ElevatedButton.styleFrom(
+                                                  padding: EdgeInsets.only(
+                                                      top: 13,
+                                                      bottom: 13,
+                                                      left: 30,
+                                                      right: 30),
+                                                  elevation: 10),
+                                              onPressed: () {
+                                                addToWishlist(doc.id);
+                                              },
+                                            )
+                                          : Text(""),
+                                    ],
                                   ),
+                                  decoration: BoxDecoration(
+                                      color: Colors.amber,
+                                      borderRadius: BorderRadius.circular(15)),
                                 ),
-                              );
-                            }),
-                      ),
+                              ),
+                            );
+                          }),
                     );
                   } else {
                     return Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 250,
-                                    crossAxisSpacing: 20,
-                                    mainAxisSpacing: 20),
-                            itemCount: displayList.length,
-                            itemBuilder: (BuildContext ctx, index) {
-                              DocumentSnapshot doc = displayList[index];
+                      child: GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 5),
+                          itemCount: displayList.length,
+                          itemBuilder: (BuildContext ctx, index) {
+                            DocumentSnapshot doc = displayList[index];
 
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: InkWell(
-                                  onTap: () => print("Here"),
-                                  child: Container(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Image(
-                                            image:
-                                                NetworkImage(doc["images"][0])),
-                                        Text(doc["name"],
-                                            style: TextStyle(fontSize: 20)),
-                                        SizedBox(height: 5),
-                                        Text(doc["description"]),
-                                        SizedBox(height: 5),
-                                        Text(doc["price"].toString()),
-                                        SizedBox(height: 5),
-                                        Text("Tags: " +
-                                            doc["tags"]
-                                                .toString()
-                                                .replaceAll("[", "")
-                                                .replaceAll("]", ""))
-                                      ],
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: Colors.amber,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () => print("Here"),
+                                child: Container(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Image(
+                                          image: NetworkImage(
+                                            doc["image"],
+                                          ),
+                                          height: 140,
+                                          width: 300),
+                                      Text(doc["name"],
+                                          style: TextStyle(fontSize: 25)),
+                                      SizedBox(height: 3),
+                                      Text(doc["description"]),
+                                      SizedBox(height: 3),
+                                      Text("\$" + doc["price"].toString()),
+                                      SizedBox(height: 3),
+                                      Text("Tags: " +
+                                          doc["tags"]
+                                              .toString()
+                                              .replaceAll("[", "")
+                                              .replaceAll("]", "")),
+                                      SizedBox(height: 3),
+                                      Text("CONTACT:" + doc['contact']),
+                                      SizedBox(height: 10),
+                                      isLoggedIn == true &&
+                                              doc["contact"] !=
+                                                  auth.currentUser!.email
+                                          ? ElevatedButton(
+                                              child: Text('Add to wishlist',
+                                                  style:
+                                                      TextStyle(fontSize: 12)),
+                                              style: ElevatedButton.styleFrom(
+                                                  padding: EdgeInsets.only(
+                                                      top: 13,
+                                                      bottom: 13,
+                                                      left: 30,
+                                                      right: 30),
+                                                  elevation: 10),
+                                              onPressed: () {
+                                                addToWishlist(doc.id);
+                                              },
+                                            )
+                                          : Text(""),
+                                    ],
                                   ),
+                                  decoration: BoxDecoration(
+                                      color: Colors.amber,
+                                      borderRadius: BorderRadius.circular(15)),
                                 ),
-                              );
-                            }),
-                      ),
+                              ),
+                            );
+                          }),
                     );
                   }
                 }),

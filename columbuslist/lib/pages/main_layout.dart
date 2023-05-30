@@ -24,6 +24,8 @@ class _MainLayoutState extends State<MainLayout> {
   final searchController = TextEditingController();
   String searchText = "";
 
+  bool wishlistChange = false;
+
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the
@@ -34,6 +36,7 @@ class _MainLayoutState extends State<MainLayout> {
 
   void refreshState() {
     setState(() {});
+    getData();
   }
 
   @override
@@ -50,9 +53,25 @@ class _MainLayoutState extends State<MainLayout> {
         });
       }
     });
+    getData();
   }
 
-  void sell() {}
+  void getData() async {
+    await usercollection.doc(auth.currentUser!.uid).get().then((value) => {
+          if (value['notifyChange'] == true)
+            {
+              setState(() {
+                wishlistChange = true;
+              }),
+            }
+        });
+  }
+
+  void updateNotifier() {
+    usercollection.doc(auth.currentUser!.uid).update({
+      'notifyChange': false,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +99,10 @@ class _MainLayoutState extends State<MainLayout> {
                           top: -5,
                           right: 5,
                           child: ElevatedButton(
-                            child: Icon(Icons.bookmark),
+                            child: Icon(Icons.bookmark,
+                                color: !wishlistChange
+                                    ? Colors.white
+                                    : Colors.red),
                             style: ElevatedButton.styleFrom(
                                 primary: Colors.transparent,
                                 shadowColor: Colors.transparent,
@@ -89,6 +111,10 @@ class _MainLayoutState extends State<MainLayout> {
                             onPressed: () {
                               locator<NavigationService>()
                                   .navigateTo(WishlistPage.route);
+                              setState(() {
+                                wishlistChange = false;
+                              });
+                              updateNotifier();
                             },
                           ),
                         )
